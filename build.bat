@@ -3,10 +3,10 @@
 SET OutputFile=Main.exe
 SET IntDir=int\
 SET CommonCompilerFlags=/utf-8 /std:c17 /FC /W4 /nologo /Fo%IntDir% /Fd%IntDir%
-SET DebugCompilerFlags=/Od /Zi /MTd
+SET DebugCompilerFlags=/Od /Zi /MTd /D _CRT_SECURE_NO_WARNINGS
 SET ReleaseCompilerFlags=/O2 /Zo /MT /WX
 REM /ENTRY:<function name> /OPT:REF /INCREMENTAL:NO /SUBSYSTEM:<CONSOLE | WINDOWS> /STACK:0x100000,0x100000
-SET CommonLinkerFlags=/INCREMENTAL:NO /OPT:REF /SUBSYSTEM:CONSOLE 
+SET CommonLinkerFlags=/OPT:REF /SUBSYSTEM:CONSOLE 
 
 IF NOT EXIST build mkdir build
 IF NOT EXIST int mkdir int
