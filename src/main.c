@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "types.h"
 #include "log.h"
+#include "lexer.h"
 
 typedef struct EntireFile
 {
@@ -18,7 +19,7 @@ EntireFile ReadEntireFile(char* fileName)
         SC_ERROR("file %s could not be found", fileName);
         return result;
     }
-    
+
     fseek(file, 0, SEEK_END);
     result.Size = ftell(file);
     fseek(file, 0, SEEK_SET);
@@ -41,6 +42,9 @@ int main(int argc, char *argv[])
     }
 
     EntireFile source = ReadEntireFile(argv[1]);
+    Lexer lexer = LexerInit(source.Contents, source.Size);
+    LexerParse(&lexer);
+   
     free(source.Contents);
     return 0;
 }
