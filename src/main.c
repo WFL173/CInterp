@@ -1,14 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-
-#define SC_OKAY(message, ...) printf("[+] " message "\n", ##__VA_ARGS__)
-#define SC_ERROR(message, ...) printf("[-] " message "\n", ##__VA_ARGS__)
-#define SC_WARNING(message, ...) printf("[!] " message "\n", ##__VA_ARGS__)
-#define SC_INFO(message, ...) printf("[I] " message "\n", ##__VA_ARGS__)
+#include "types.h"
+#include "log.h"
 
 typedef struct EntireFile
 {
-    char* Contents;
+    u8* Contents;
     int Size; // this variable is equal to fileSize + 1. The extra one is from the '\0' character.
 } EntireFile;
 
@@ -35,8 +32,15 @@ EntireFile ReadEntireFile(char* fileName)
     return result;
 }
 
-int main(int argc, char** argv[])
+int main(int argc, char *argv[])
 {
-    printf("test \n");
+    if (argc < 2)
+    {
+        printf("usage: ");
+        return 1;
+    }
+
+    EntireFile source = ReadEntireFile(argv[1]);
+    free(source.Contents);
     return 0;
 }
