@@ -13,7 +13,7 @@ typedef struct EntireFile
 EntireFile ReadEntireFile(char* fileName)
 {
     EntireFile result = {0};
-    FILE* file = fopen(fileName, "r");
+    FILE* file = fopen(fileName, "rb");
     if (!file)
     {
         SC_ERROR("file %s could not be found", fileName);
