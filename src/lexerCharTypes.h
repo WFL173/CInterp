@@ -1,6 +1,7 @@
 #ifndef CHARTYPES_H
 #define CHARTYPES_H
 
+int IsSingleCharToken(char key);
 int IsIdentifier(char key);
 int IsIdentifierStart(char key);
 
