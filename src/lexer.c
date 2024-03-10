@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "lexer.h"
 #include "log.h"
 #include "lexerCharTypes.h"
@@ -47,34 +48,54 @@ Token LexerReadNextToken(Lexer* lexer)
         return token;
     }
     
-    if (lexer->Contents[lexer->Cursor] == ';')
+    // this switch will handle tokens composed of a single character.
+    char current = lexer->Contents[lexer->Cursor];
+    if (IsSingleCharToken(current))
     {
-        SC_INFO("; found at line: %lld, colon: %lld", lexer->Line, lexer->Cursor - lexer->BeginningOfLine);
+        SC_INFO("%c token found at line %lld, colon: %lld", current, lexer->Line, lexer->Cursor - lexer->BeginningOfLine);
         lexer->Cursor++;
+        token.Type = current;
         return token;
     }
+    
 
-    if (IsIdentifierStart(lexer->Contents[lexer->Cursor]))
+    if (IsIdentifierStart(current))
     {
-        SC_INFO("Identifier found at line: %lld, colon: %lld", lexer->Line, lexer->Cursor - lexer->BeginningOfLine);
-        lexer->Cursor++;
+        u64 currentCursorPosition = lexer->Cursor++;
         while (IsIdentifier(lexer->Contents[lexer->Cursor]))
         {
             lexer->Cursor++;
         }
-        
+        u64 identifierSize = lexer->Cursor - currentCursorPosition;
+        u8* identifier = malloc(identifierSize + 1);
+
+        for (int i = 0; i < identifierSize; i++)
+        {
+            identifier[i] = lexer->Contents[currentCursorPosition + i];
+        }
+        identifier[identifierSize] = '\0';
+
+        SC_INFO("Identifier %s found at line: %lld, colon: %lld", identifier, lexer->Line, currentCursorPosition - lexer->BeginningOfLine);
+        token.Type = TOKEN_IDENTIFIER;
+        token.TokenData.String = identifier;
+
         return token;
     }
 
-    if (IsDigit(lexer->Contents[lexer->Cursor]))
+    if (IsDigit(current))
     {
-        SC_INFO("Integer literal found at line: %lld, colon: %lld", lexer->Line, lexer->Cursor - lexer->BeginningOfLine);
-        lexer->Cursor++;
+        u64 currentCursorPosition = lexer->Cursor;
+        s32 sum = 0;
         while (IsDigit(lexer->Contents[lexer->Cursor]))
         {
+            sum *= 10;
+            sum += lexer->Contents[lexer->Cursor] - '0';
             lexer->Cursor++;
         }
         
+        SC_INFO("Integer literal %d found at line: %lld, colon: %lld", sum, lexer->Line, currentCursorPosition - lexer->BeginningOfLine);
+        token.Type = TOKEN_INT_LITERAL;
+        token.TokenData.IntValue = sum;
         return token;
     }
     
@@ -84,12 +105,14 @@ Token LexerReadNextToken(Lexer* lexer)
 
 TokenArray LexerParse(Lexer* lexer)
 {
-    TokenArray result = {0};
+    TokenArray result = TokenArrayInit();
 
     while(lexer->Cursor < lexer->ContentSize)
     {
-        LexerReadNextToken(lexer);
+        Token token = LexerReadNextToken(lexer);
+        TokenArrayAdd(&result, token);
     }
 
+    TokenArrayTrimToSize(&result);
     return result;
 }
