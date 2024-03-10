@@ -15,6 +15,7 @@
             "cwd": "${workspaceFolder}",
             "environment": [],
             "console": "integratedTerminal",
+            "visualizerFile": "${workspaceFolder}\\visualizers\\Comp.natvis",
             "preLaunchTask": "build"
         }
 

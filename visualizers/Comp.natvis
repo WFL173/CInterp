@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010"> 
+  <Type Name="TokenArray">
+    <Expand>
+      <Item Name="[Size]">Size</Item>
+      <Item Name="[Capacity]">Capacity</Item>
+      <Synthetic Name="[Data]">
+        <Expand>
+          <ArrayItems>
+            <Size>Size</Size>
+            <ValuePointer>Tokens</ValuePointer>
+          </ArrayItems>
+        </Expand>
+      </Synthetic>
+    </Expand>
+  </Type>
+</AutoVisualizer>
