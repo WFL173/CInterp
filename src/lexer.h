@@ -15,6 +15,6 @@ typedef struct Lexer
 
 Lexer LexerInit(const u8* contents, u64 contentSize);
 Token LexerReadNextToken(Lexer* lexer);
-TokenArray LexerParse(Lexer* lexer);
+TokenArray LexerTokenize(Lexer* lexer);
 
 #endif

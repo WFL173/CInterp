@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 
     EntireFile source = ReadEntireFile(argv[1]);
     Lexer lexer = LexerInit(source.Contents, source.Size);
-    LexerParse(&lexer);
+    LexerTokenize(&lexer);
    
     free(source.Contents);
     return 0;

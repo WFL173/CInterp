@@ -103,7 +103,7 @@ Token LexerReadNextToken(Lexer* lexer)
     return token;
 }
 
-TokenArray LexerParse(Lexer* lexer)
+TokenArray LexerTokenize(Lexer* lexer)
 {
     TokenArray result = TokenArrayInit();
 
