@@ -54,6 +54,8 @@ typedef enum
     TOKEN_FLOAT_LITERAL,
     TOKEN_DOUBLE_LITERAL,
 
+    TOKEN_END_OF_CONTENT,
+
 } TokenType;
 
 typedef struct Token

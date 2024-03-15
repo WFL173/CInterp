@@ -45,6 +45,7 @@ Token LexerReadNextToken(Lexer* lexer)
     if (lexer->Cursor >= lexer->ContentSize)
     {
         SC_INFO("end of content stream");
+        token.Type = TOKEN_END_OF_CONTENT;
         return token;
     }
     
