@@ -3,6 +3,7 @@
 #include "types.h"
 #include "log.h"
 #include "lexer.h"
+#include "wordGraph.h"
 
 typedef struct EntireFile
 {
@@ -43,8 +44,9 @@ int main(int argc, char *argv[])
 
     EntireFile source = ReadEntireFile(argv[1]);
     Lexer lexer = LexerInit(source.Contents, source.Size);
-    LexerTokenize(&lexer);
+    TokenArray tokArray = LexerTokenize(&lexer);
    
+    TokenArrayFree(&tokArray);
     free(source.Contents);
     return 0;
 }
