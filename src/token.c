@@ -1,10 +1,27 @@
 #include <stdlib.h>
 #include "token.h"
 
-TokenArray TokenArrayInit()
+void TokenArrayFree(TokenArray *tokArray)
 {
-    TokenArray result = {0};
-    return result;
+    if (tokArray->Tokens)
+    {
+        for (int i = 0; i < tokArray->Size; i++)
+        {
+            Token current = tokArray->Tokens[i];
+            if (current.Type == TOKEN_KEYWORD)
+            {
+                free(current.TokenData.String);
+            }
+            else if (current.Type == TOKEN_IDENTIFIER)
+            {
+                free(current.TokenData.String);
+            }
+        }
+        
+        free(tokArray->Tokens);
+        tokArray->Tokens = 0;
+    }
+    
 }
 
 void TokenArrayAdd(TokenArray* tokArray, Token token)

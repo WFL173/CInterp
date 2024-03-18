@@ -77,7 +77,7 @@ typedef struct TokenArray
     u64 Capacity;
 } TokenArray;
 
-TokenArray TokenArrayInit();
+void TokenArrayFree(TokenArray* tokArray);
 void TokenArrayAdd(TokenArray* tokArray, Token token);
 void TokenArrayTrimToSize(TokenArray* tokArray);
 
