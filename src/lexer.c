@@ -2,6 +2,7 @@
 #include "lexer.h"
 #include "log.h"
 #include "lexerCharTypes.h"
+#include "genericTypes.h"
 #include "wordGraph.h"
 
 const char* keywords[] =
@@ -36,16 +37,19 @@ void KeywordGraphFree()
 
 int IsKeyword(const char* contents)
 {
-    int keywordFound = 0;
+    int index = -1;
 
     StringNodeQueue currentStates = {0};
-    StringNodeQueue nextStates = {0};
+    StringNodeQueue nextStates = StringNodeQueueInit(keywordGraph.Size);
     StringNodeQueue temp = {0};
+    Queue currentIndices = {0};
+    Queue nextIndices = QueueInit(keywordGraph.Size);
+    Queue tempIndices = {0};
 
     for (int i = 0; i < keywordGraph.Size; i++)
     {
         StringNodeQueuePush(&currentStates, keywordGraph.Words[i].Start);
-        StringNodeQueuePush(&nextStates, keywordGraph.Words[i].Start);
+        QueuePush(&currentIndices, i);
     }
 
     for (int i = 0; IsIdentifier(contents[i]); i++)
@@ -53,17 +57,23 @@ int IsKeyword(const char* contents)
         char currentChar = contents[i];
         
         nextStates.Size = 0;
+        nextIndices.Size = 0;
         for (int j = 0; j < currentStates.Size; j++)
         {
             if (currentChar == currentStates.Nodes[j]->Key)
             {
                 StringNodeQueuePush(&nextStates, currentStates.Nodes[j]->Next);
+                QueuePush(&nextIndices, currentIndices.Values[j]);
             }   
         }
 
         temp = currentStates;
         currentStates = nextStates;
         nextStates = temp; 
+
+        tempIndices = currentIndices;
+        currentIndices = nextIndices;
+        nextIndices = tempIndices; 
 
         if (currentStates.Size == 0)
         {
@@ -76,15 +86,17 @@ int IsKeyword(const char* contents)
     {
         if (currentStates.Nodes[i]->Type == STRNODETYPE_END)
         {
-            keywordFound = 1;
+            index = QueuePop(&currentIndices);
             break;
         }
     }
 
     StringNodeQueueFree(&currentStates);
     StringNodeQueueFree(&nextStates);
+    QueueFree(&currentIndices);
+    QueueFree(&nextIndices);
 
-    return keywordFound;
+    return index;
 }
 
 Lexer LexerInit(const u8* contents, u64 contentSize)
@@ -114,6 +126,7 @@ void LexerSkipSpaces(Lexer* lexer)
 Token LexerReadNextToken(Lexer* lexer)
 {
     Token token = {0};
+    int keywordIndex = -1;
 
     LexerSkipSpaces(lexer);
 
@@ -151,24 +164,13 @@ Token LexerReadNextToken(Lexer* lexer)
         return token;
     }
 
-    if (IsKeyword(&lexer->Contents[lexer->Cursor]))
+    if ((keywordIndex = IsKeyword(&lexer->Contents[lexer->Cursor])) != -1)
     {
-        u64 currentCursorPosition = lexer->Cursor++;
-        while (IsAlpha(lexer->Contents[lexer->Cursor]))
-        {
-            lexer->Cursor++;
-        }
-        u64 keywordSize = lexer->Cursor - currentCursorPosition;
-        u8* keyword = malloc(keywordSize + 1);
-
-        for (int i = 0; i < keywordSize; i++)
-        {
-            keyword[i] = lexer->Contents[currentCursorPosition + i];
-        }
-        keyword[keywordSize] = '\0';
+        u64 currentCursorPosition = lexer->Cursor;
+        lexer->Cursor += StringLength(keywords[keywordIndex]);
         
-        SC_INFO("keyword %s found at line: %lld, colon: %lld", keyword, lexer->Line, currentCursorPosition - lexer->BeginningOfLine);
-        token.TokenData.String = keyword;
+        SC_INFO("keyword %s found at line: %lld, colon: %lld", keywords[keywordIndex], lexer->Line, currentCursorPosition - lexer->BeginningOfLine);
+        token.TokenData.IntValue = keywordIndex;
         token.Type = TOKEN_KEYWORD;
         return token;
     }
