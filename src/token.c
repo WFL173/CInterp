@@ -10,7 +10,7 @@ void TokenArrayFree(TokenArray *tokArray)
             Token current = tokArray->Tokens[i];
             if (current.Type == TOKEN_KEYWORD)
             {
-                free(current.TokenData.String);
+                
             }
             else if (current.Type == TOKEN_IDENTIFIER)
             {

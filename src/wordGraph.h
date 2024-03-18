@@ -38,6 +38,7 @@ typedef struct WordGraph
     u64 Capacity;
 } WordGraph;
 
+StringNodeQueue StringNodeQueueInit(u64 capacity);
 void StringNodeQueueFree(StringNodeQueue* queue);
 void StringNodeQueueTrimToSize(StringNodeQueue* queue);
 void StringNodeQueuePush(StringNodeQueue* queue, StringNode* node);

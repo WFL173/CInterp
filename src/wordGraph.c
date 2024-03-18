@@ -1,13 +1,12 @@
 #include <stdlib.h>
 #include "wordGraph.h"
+#include "genericTypes.h"
 
-int StringLength(const char* string)
+StringNodeQueue StringNodeQueueInit(u64 capacity)
 {
-    int result = 0;
-    while (*string++)
-    {
-        result++;
-    }
+    StringNodeQueue result = {0};
+    result.Capacity = capacity;
+    result.Nodes = malloc(capacity * sizeof(StringNode*));
     return result;
 }
 
