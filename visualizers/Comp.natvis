@@ -14,4 +14,18 @@
       </Synthetic>
     </Expand>
   </Type>
+  <Type Name="WordGraph">
+    <Expand>
+      <Item Name="[Size]">Size</Item>
+      <Item Name="[Capacity]">Capacity</Item>
+      <Synthetic Name="[Data]">
+        <Expand>
+          <ArrayItems>
+            <Size>Size</Size>
+            <ValuePointer>Words</ValuePointer>
+          </ArrayItems>
+        </Expand>
+      </Synthetic>
+    </Expand>
+  </Type>
 </AutoVisualizer>
