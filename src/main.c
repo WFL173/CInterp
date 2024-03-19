@@ -3,7 +3,6 @@
 #include "types.h"
 #include "log.h"
 #include "lexer.h"
-#include "wordGraph.h"
 
 typedef struct EntireFile
 {

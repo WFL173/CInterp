@@ -3,7 +3,6 @@
 #include "log.h"
 #include "lexerCharTypes.h"
 #include "genericTypes.h"
-#include "wordGraph.h"
 
 const char* keywords[] =
 {
@@ -14,87 +13,25 @@ const char* keywords[] =
     "while",
 };
 
-WordGraph keywordGraph = {0};
-
-void KeywordGraphInit()
-{
-    if (keywordGraph.Words)
-    {
-        return;
-    }
-
-    for (int i = 0; i < ARRAY_COUNT(keywords); i++)
-    {
-        WordGraphAddWord(&keywordGraph, WordFromString(keywords[i]));
-    }
-
-}
-
-void KeywordGraphFree()
-{
-    WordGraphFree(&keywordGraph);
-}
-
-int IsKeyword(const char* contents)
+int IsKeyword(const u8* contents)
 {
     int index = -1;
 
-    StringNodeQueue currentStates = {0};
-    StringNodeQueue nextStates = StringNodeQueueInit(keywordGraph.Size);
-    StringNodeQueue temp = {0};
-    Queue currentIndices = {0};
-    Queue nextIndices = QueueInit(keywordGraph.Size);
-    Queue tempIndices = {0};
-
-    for (int i = 0; i < keywordGraph.Size; i++)
+    for (int keywordIndex = 0; keywordIndex < ARRAY_COUNT(keywords); keywordIndex++)
     {
-        StringNodeQueuePush(&currentStates, keywordGraph.Words[i].Start);
-        QueuePush(&currentIndices, i);
-    }
+        const char* currentKeyword = keywords[keywordIndex];
+        int length = StringLength(currentKeyword);
+        int i = 0;
+        int j = 0;
 
-    for (int i = 0; IsIdentifier(contents[i]); i++)
-    {
-        char currentChar = contents[i];
-        
-        nextStates.Size = 0;
-        nextIndices.Size = 0;
-        for (int j = 0; j < currentStates.Size; j++)
+        for (;currentKeyword[i] != '\0' && currentKeyword[i] == contents[j]; i++, j++);
+
+        if(j == length && !IsIdentifier(contents[j]))
         {
-            if (currentChar == currentStates.Nodes[j]->Key)
-            {
-                StringNodeQueuePush(&nextStates, currentStates.Nodes[j]->Next);
-                QueuePush(&nextIndices, currentIndices.Values[j]);
-            }   
-        }
-
-        temp = currentStates;
-        currentStates = nextStates;
-        nextStates = temp; 
-
-        tempIndices = currentIndices;
-        currentIndices = nextIndices;
-        nextIndices = tempIndices; 
-
-        if (currentStates.Size == 0)
-        {
-            break;
-        }
-          
-    }
-    
-    for (int i = 0; i < currentStates.Size; i++)
-    {
-        if (currentStates.Nodes[i]->Type == STRNODETYPE_END)
-        {
-            index = QueuePop(&currentIndices);
+            index = keywordIndex;
             break;
         }
     }
-
-    StringNodeQueueFree(&currentStates);
-    StringNodeQueueFree(&nextStates);
-    QueueFree(&currentIndices);
-    QueueFree(&nextIndices);
 
     return index;
 }
@@ -206,7 +143,6 @@ Token LexerReadNextToken(Lexer* lexer)
 TokenArray LexerTokenize(Lexer* lexer)
 {
     TokenArray result = {0};
-    KeywordGraphInit();
 
     while(lexer->Cursor < lexer->ContentSize)
     {
@@ -214,7 +150,6 @@ TokenArray LexerTokenize(Lexer* lexer)
         TokenArrayAdd(&result, token);
     }
 
-    KeywordGraphFree();
     TokenArrayTrimToSize(&result);
     return result;
 }
